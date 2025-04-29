@@ -12,8 +12,7 @@ public class AgendaServicos {
    protected int id_tipo_servico;
    //criação dos atriubtos de agendaServico.
    
-    public AgendaServicos(int id, Date data, String status, int id_cliente, int id_tipo_servico) {
-        this.id = id;
+    public AgendaServicos(Date data, String status, int id_cliente, int id_tipo_servico) {
         this.data = data;
         this.status = status;
         this.id_cliente = id_cliente;

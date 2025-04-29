@@ -10,8 +10,7 @@ public class Cliente {
     protected String placa_do_veiculo;
     //criação dos atriubtos de cliente.
     
-    public Cliente(int id, String nome, String cpf, String telefone, String email, String placa_do_veiculo) {
-        this.id = id;
+    public Cliente(String nome, String cpf, String telefone, String email, String placa_do_veiculo) {
         this.nome = nome;
         this.cpf = cpf;
         this.telefone = telefone;
