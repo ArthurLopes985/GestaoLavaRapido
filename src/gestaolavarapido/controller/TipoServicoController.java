@@ -5,8 +5,8 @@ import gestaolavarapido.model.TipoServico;
 
 public class TipoServicoController extends TipoServico {
     // conexão com tiposervico model
-    public TipoServicoController(String nome, String descricao, double preco) {
-        super(nome, descricao, preco);
+    public TipoServicoController(int id, String nome, String descricao, double preco) {
+        super(id, nome, descricao, preco);
     }
     
 }

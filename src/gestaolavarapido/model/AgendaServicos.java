@@ -1,23 +1,24 @@
 
 package gestaolavarapido.model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
 public class AgendaServicos {
    protected int id;
-   protected Date data;
+   protected String cliente;
+   protected LocalDate data;
+   protected String tipo_servico;
    protected String status;
-   protected int id_cliente;
-   protected int id_tipo_servico;
    //criação dos atriubtos de agendaServico.
-   
-    public AgendaServicos(Date data, String status, int id_cliente, int id_tipo_servico) {
+
+    public AgendaServicos(String cliente, LocalDate data, String tipo_servico, String status) {
+        this.cliente = cliente;
         this.data = data;
+        this.tipo_servico = tipo_servico;
         this.status = status;
-        this.id_cliente = id_cliente;
-        this.id_tipo_servico = id_tipo_servico;
-    } //criacao do construtor
+    }//criacao do construtor
 
     //criacao dos getters e setters
     public int getId() {
@@ -28,12 +29,28 @@ public class AgendaServicos {
         this.id = id;
     }
 
-    public Date getData() {
+    public String getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
+    }
+
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(Date data) {
+    public void setData(LocalDate data) {
         this.data = data;
+    }
+
+    public String getTipo_servico() {
+        return tipo_servico;
+    }
+
+    public void setTipo_servico(String tipo_servico) {
+        this.tipo_servico = tipo_servico;
     }
 
     public String getStatus() {
@@ -43,22 +60,4 @@ public class AgendaServicos {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    public int getId_cliente() {
-        return id_cliente;
-    }
-
-    public void setId_cliente(int id_cliente) {
-        this.id_cliente = id_cliente;
-    }
-
-    public int getId_tipo_servico() {
-        return id_tipo_servico;
-    }
-
-    public void setId_tipo_servico(int id_tipo_servico) {
-        this.id_tipo_servico = id_tipo_servico;
-    }
-   
-   
 }

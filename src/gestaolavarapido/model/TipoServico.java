@@ -9,7 +9,8 @@ public class TipoServico {
     protected double preco;
     //criação dos atriubtos de tiposervico. 
 
-    public TipoServico(String nome, String descricao, double preco) {
+    public TipoServico(int id, String nome, String descricao, double preco) {
+        this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
