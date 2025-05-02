@@ -43,4 +43,62 @@ public class TipoServicoDAO {
 
         return lista;
     }//retorna a lista declarada no metodo.
+    
+    public boolean cadastrarTipo(TipoServico tipo) throws ClassNotFoundException {
+        String sql = "{CALL cadastrar_tipo_servico(?, ?, ?)}";
+        boolean sucesso = false;
+
+        try (Connection conn = ConnectionFactory.getConexao();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setString(1, tipo.getNome());
+            stmt.setString(2, tipo.getDescricao());
+            stmt.setDouble(3, tipo.getPreco());
+
+            sucesso = stmt.executeUpdate() > 0;
+        //executa com os dados digitados a stored procedure do bd para cadastrar tipo.
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }//tratamento de erros.
+
+        return sucesso;
+    }//retorna apenas se operação for bem sucedida.
+    public boolean editarTipo(TipoServico tipo) throws ClassNotFoundException {
+        String sql = "{CALL editar_tipo_servico(?, ?, ?, ?)}";
+        boolean sucesso = false;
+
+        try (Connection conn = ConnectionFactory.getConexao();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+
+            stmt.setString(2, tipo.getNome());
+            stmt.setString(3, tipo.getDescricao());
+            stmt.setDouble(4, tipo.getPreco());
+            stmt.setInt(1, tipo.getId());
+
+            sucesso = stmt.executeUpdate() > 0;
+        //executa com os dados digitados a stored procedure do bd para editar tipo.
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }//tratamento de erros.
+
+        return sucesso;
+    }//retorna apenas se operação for bem sucedida.
+    
+     public boolean apagarTipo(TipoServico tipo) throws ClassNotFoundException {
+        String sql = "{CALL apagar_tipo_servico(?)}";
+        boolean sucesso = false;
+
+        try (Connection conn = ConnectionFactory.getConexao();
+             CallableStatement stmt = conn.prepareCall(sql)) {
+            
+            stmt.setInt(1, tipo.getId());
+
+            sucesso = stmt.executeUpdate() > 0;
+        //executa com os dados digitados a stored procedure do bd para apagar tipo.
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }//tratamento de erros.
+
+        return sucesso;
+    }//retorna apenas se operação for bem sucedida.
 }

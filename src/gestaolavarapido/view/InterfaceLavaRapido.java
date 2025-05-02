@@ -5,6 +5,7 @@ import gestaolavarapido.DAO.AgendaServicosDAO;
 import gestaolavarapido.DAO.TipoServicoDAO;
 import gestaolavarapido.controller.AgendaServicosController;
 import gestaolavarapido.controller.ClienteController;
+import gestaolavarapido.controller.TipoServicoController;
 import gestaolavarapido.model.AgendaServicos;
 import gestaolavarapido.model.Cliente;
 import gestaolavarapido.model.TipoServico;
@@ -396,8 +397,18 @@ public class InterfaceLavaRapido extends javax.swing.JFrame {
         });
 
         editarbutton.setText("EDITAR");
+        editarbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarbuttonActionPerformed(evt);
+            }
+        });
 
         deletebutton.setText("DELETAR");
+        deletebutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deletebuttonActionPerformed(evt);
+            }
+        });
 
         info1.setForeground(new java.awt.Color(255, 0, 0));
         info1.setText("- PARA CADASTRAR NOVO NÃO É NECESSARIO DIGITAR O ID E CLICAR NO BOTÃO SALVAR.");
@@ -494,7 +505,7 @@ public class InterfaceLavaRapido extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(logoetitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -526,7 +537,43 @@ public class InterfaceLavaRapido extends javax.swing.JFrame {
     }//GEN-LAST:event_idtipofieldActionPerformed
 
     private void salvartipobuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salvartipobuttonActionPerformed
-        // TODO add your handling code here:
+        String nome = nometipofield.getText();
+        String descricao = descricaofield.getText();
+        String precotx = precofield.getText();
+        //pega os dados digitados nos campos da view e aramzena em atributos.
+        if (nome.isEmpty() || descricao.isEmpty() || precotx.isEmpty() ) {
+            JOptionPane.showMessageDialog(null, "Por favor, preencha os campos Nome, Descrição e Preço.");
+            return;
+        }// verifica se algum deles esta vazio.
+        double preco;
+        try {
+            preco = Double.parseDouble(precotx);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Preço inválido. Digite um número.");
+            return;
+        }
+        //transforma o preco pego em string em double.
+        if (preco >= 9999.99) {
+             JOptionPane.showMessageDialog(null, "O preco deve ser menor que 9999.99"); 
+             return;
+        }//verifica se o preco tem tamanho correto, para dar certo no bd.
+        else{
+        TipoServico tipo = new TipoServico(0, nome, descricao, preco);//passa os dados pra classe tiposervico.
+        TipoServicoController controller = new TipoServicoController(0, nome, descricao, preco);// passa os dados pro controller de tiposervico.
+        try {
+            controller.cadastrarTipo(tipo);//executa o metodo de cadastro no banco de dados.
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(InterfaceLavaRapido.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro: não foi possível realizar a operação. Tente novamente."); //tratamento de erros.
+        }
+
+        JOptionPane.showMessageDialog(null, "Tipo de Servico cadastrado com sucesso!");
+        idtipofield.setText("");
+        nometipofield.setText("");
+        descricaofield.setText("");
+        precofield.setText("");
+        atualizarTabelaTipoServico();
+        }// mensagem de sucesso e limpa os campos digitados e atualiza as tabelas com tipo.
     }//GEN-LAST:event_salvartipobuttonActionPerformed
 
     private void cadastrarbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cadastrarbuttonActionPerformed
@@ -647,6 +694,119 @@ public class InterfaceLavaRapido extends javax.swing.JFrame {
         //mensagem de sucesso e limpa os campos digitados.
     }//GEN-LAST:event_salvarangedamentobuttonActionPerformed
 
+    private void editarbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarbuttonActionPerformed
+        String idtx = idtipofield.getText();
+        String nome = nometipofield.getText();
+        String descricao = descricaofield.getText();
+        String precotx = precofield.getText();
+        //pega os dados digitados nos campos da view e aramzena em atributos.
+        if (idtx.isEmpty()  || nome.isEmpty() || descricao.isEmpty() || precotx.isEmpty() ) {
+            JOptionPane.showMessageDialog(null, "Por favor, preencha todos os campos.");
+            return;
+        }// verifica se algum deles esta vazio.
+        int id;
+        try {
+            id = Integer.parseInt(idtx);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Id inválido. Digite um número.");
+            return;
+        }//tranforma o id digitado em integer.
+        
+        boolean encontrado = false;
+        int totalLinhas = tabelatipos.getRowCount();
+
+        for (int i = 0; i < totalLinhas; i++) {
+            int idNaTabela = (int) tabelatipos.getValueAt(i, 0);
+            if (idNaTabela == id) {
+                encontrado = true;
+                break;
+            }
+        }//faz uma contagem em todas linhas da tabela, para ver se acha o id digitado pelo usuario.
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(null, "ID não encontrado.");
+            return;
+        } //mensagem caso o id não seja encontrado.
+        double preco;
+        try {
+            preco = Double.parseDouble(precotx);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Preço inválido. Digite um número.");
+            return;
+        }
+        //transforma o preco pego em string em double.
+        if (preco >= 9999.99) {
+             JOptionPane.showMessageDialog(null, "O preco deve ser menor que 9999.99"); 
+             return;
+        }//verifica se o preco tem tamanho correto, para dar certo no bd.
+        
+        else{
+        TipoServico tipo = new TipoServico(id, nome, descricao, preco);//passa os dados pra classe tiposervico.
+        TipoServicoController controller = new TipoServicoController(id, nome, descricao, preco);// passa os dados pro controller de tiposervico.
+        try {
+            controller.editarTipo(tipo);//executa o metodo de editar no banco de dados.
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(InterfaceLavaRapido.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro: não foi possível realizar a operação. Tente novamente."); //tratamento de erros.
+        }
+
+        JOptionPane.showMessageDialog(null, "Tipo de Servico atualizado com sucesso!");
+        idtipofield.setText("");
+        nometipofield.setText("");
+        descricaofield.setText("");
+        precofield.setText("");
+        atualizarTabelaTipoServico();
+        }// mensagem de sucesso e limpa os campos digitados e atualiza as tabelas com tipo.
+    }//GEN-LAST:event_editarbuttonActionPerformed
+
+    private void deletebuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletebuttonActionPerformed
+         String idtx = idtipofield.getText();
+        //pega os dado digitado no campo da view e aramzena em atributo.
+        if (idtx.isEmpty() ) {
+            JOptionPane.showMessageDialog(null, "Por favor, preencha o campo ID.");
+            return;
+        }// verifica se algum deles esta vazio.
+        
+        int id;
+        try {
+            id = Integer.parseInt(idtx);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Id inválido. Digite um número.");
+            return;
+        }//tranforma o id digitado em integer.
+        
+        boolean encontrado = false;
+        int totalLinhas = tabelatipos.getRowCount();
+
+        for (int i = 0; i < totalLinhas; i++) {
+            int idNaTabela = (int) tabelatipos.getValueAt(i, 0);
+            if (idNaTabela == id) {
+                encontrado = true;
+                break;
+            }
+        }//faz uma contagem em todas linhas da tabela, para ver se acha o id digitado pelo usuario.
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(null, "ID não encontrado.");
+            return;
+        } //mensagem caso o id não seja encontrado.
+        else{
+        TipoServico tipo = new TipoServico(id, "nome", "descricao", 0.0);//passa os dados pra classe tiposervico.
+        TipoServicoController controller = new TipoServicoController(id, "nome", "descricao", 0.0);// passa os dados pro controller de tiposervico.
+        try {
+            controller.apagarTipo(tipo);//executa o metodo de cadastro no banco de dados.
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(InterfaceLavaRapido.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, "Erro: não foi possível realizar a operação. Tente novamente."); //tratamento de erros.
+        }
+
+        JOptionPane.showMessageDialog(null, "Tipo de Servico deletado com sucesso!");
+        idtipofield.setText("");
+        nometipofield.setText("");
+        descricaofield.setText("");
+        precofield.setText("");
+        atualizarTabelaTipoServico();
+        }// mensagem de sucesso e limpa os campos digitados e atualiza as tabelas com tipo.
+    }//GEN-LAST:event_deletebuttonActionPerformed
+
 
     public static void main(String args[]) {
 
@@ -707,4 +867,37 @@ public class InterfaceLavaRapido extends javax.swing.JFrame {
     private javax.swing.JLabel telefonetxt;
     private javax.swing.JLabel tiposervicotxt;
     // End of variables declaration//GEN-END:variables
+
+    private void atualizarTabelaTipoServico() {
+    try {
+        TipoServicoDAO dao = new TipoServicoDAO();
+        List<TipoServico> lista = dao.listartipos();
+
+        DefaultTableModel model = (DefaultTableModel) tabelatipos.getModel();
+        DefaultTableModel model1 = (DefaultTableModel) tabelatiposagendar.getModel();
+        model.setRowCount(0);
+        model1.setRowCount(0);
+
+        for (TipoServico ts : lista) {
+            model.addRow(new Object[]{
+                ts.getId(),
+                ts.getNome(),
+                ts.getDescricao(),
+                ts.getPreco()
+            });
+        }
+        for (TipoServico ts1 : lista) {
+            model1.addRow(new Object[]{
+                ts1.getId(),
+                ts1.getNome(),
+                ts1.getDescricao(),
+                ts1.getPreco()
+            });
+       }
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Erro ao atualizar a tabela: " + e.getMessage());
+    }
+} //metodo de atualizacao das tabelas quando algum operação de editar, cadastrar ou deletar é feita nas tabelas de tipo de servico.
+
 }
